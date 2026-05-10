@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Django
+*.sqlite3
+db.sqlite3
+*.log
+.env
+
+# Virtual Environments
+venv_mysite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# bookmyshow is separate repo (if keeping as submodule/separate)
+bookmyshow-clone/
+django_practice/ 
+in_memory_notes_api
+windows_commands.md
