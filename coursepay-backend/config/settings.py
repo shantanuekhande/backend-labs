@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('Django_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['192.168.0.135', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.0.135', 'localhost', '127.0.0.1', '.ngrok-free.dev']
 
 
 # Application definition
@@ -162,6 +162,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REZORPAY_KEY_ID = os.getenv('REZORPAY_KEY_ID')
 REZORPAY_KEY_SECRET = os.getenv('REZORPAY_KEY_SECRET')
+RAZORPAY_WEBHOOK_SECRET = os.getenv('RAZORPAY_WEBHOOK_SECRET', 'my_webhook_secret')
 
 
 CORS_ALLOW_ALL_ORIGINS = True

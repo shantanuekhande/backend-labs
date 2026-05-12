@@ -22,4 +22,6 @@ urlpatterns = [
     path('api/courses/', include('courses.api.urls')),
     path("api/orders/",include("orders.api.urls")),
     path("api/payments/", include("payments.api.urls")),
+    path("api/webhooks/",include("webhooks.api.urls")),
 ]
+
