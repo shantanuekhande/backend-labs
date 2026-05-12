@@ -22,12 +22,12 @@ load_dotenv(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6kr_@jz7_040$a!gnc^qgx7%@$l#dwltxv8@28tm5-!8^d03i+'
+SECRET_KEY = os.getenv('Django_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.0.135', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -46,10 +46,13 @@ INSTALLED_APPS = [
     'payments',
     'webhooks',
     'reconciliation',
+    'corsheaders',
+    
 ]
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -154,3 +158,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REZORPAY_KEY_ID = os.getenv('REZORPAY_KEY_ID')
+REZORPAY_KEY_SECRET = os.getenv('REZORPAY_KEY_SECRET')
+
+
+CORS_ALLOW_ALL_ORIGINS = True

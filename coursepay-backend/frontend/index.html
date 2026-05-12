@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CoursePay</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        :root {
+            --bg: #f4f7ff;
+            --panel: rgba(255, 255, 255, 0.88);
+            --text: #13213c;
+            --muted: #5d6a85;
+            --primary: #2563eb;
+            --secondary: #14b8a6;
+            --accent: #f97316;
+            --border: rgba(19, 33, 60, 0.12);
+            --shadow: 0 20px 45px rgba(37, 99, 235, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 28%),
+                radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 24%),
+                linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+        }
+
+        .hero {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .hero-copy {
+            padding: 18px 0;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        h1 {
+            margin: 14px 0 10px;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1.05;
+        }
+
+        .subtitle {
+            margin: 0;
+            max-width: 54ch;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .hero-card {
+            background: linear-gradient(145deg, rgba(37, 99, 235, 0.92), rgba(20, 184, 166, 0.92));
+            color: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -40px -60px auto;
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .hero-card h2 {
+            margin: 0 0 8px;
+            font-size: 1.3rem;
+        }
+
+        .hero-card p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0 18px;
+            flex-wrap: wrap;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 1.15rem;
+        }
+
+        .status {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        #courses {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        .course-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 26px 48px rgba(19, 33, 60, 0.14);
+        }
+
+        .course-badge {
+            display: inline-flex;
+            width: fit-content;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(249, 115, 22, 0.12);
+            color: #c2410c;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .course-title {
+            margin: 0;
+            font-size: 1.15rem;
+        }
+
+        .course-price {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .course-meta {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+            min-height: 48px;
+        }
+
+        .buy-btn {
+            margin-top: auto;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.96;
+        }
+
+        .buy-btn:active {
+            transform: translateY(0);
+        }
+
+        .empty-state,
+        .error-state {
+            grid-column: 1 / -1;
+            padding: 22px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px dashed var(--border);
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .page {
+                padding: 20px 14px 40px;
+            }
+
+            .course-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page">
+        <section class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow">CoursePay • Secure checkout</span>
+                <h1>Choose a course and pay in a few clicks.</h1>
+                <p class="subtitle">
+                    Browse available courses, compare prices quickly, and complete payment through Razorpay
+                    without leaving the page.
+                </p>
+            </div>
+
+            <div class="hero-card">
+                <h2>Simple checkout flow</h2>
+                <p>
+                    Select a course, open the payment popup, and finish the test checkout flow in one smooth step.
+                    The page keeps the experience clean and easy to follow.
+                </p>
+            </div>
+        </section>
+
+        <div class="toolbar">
+            <h2 class="section-title">Available Courses</h2>
+            <div class="status" id="status">Loading courses...</div>
+        </div>
+
+        <div id="courses"></div>
+    </main>
+
+    <script>
+        async function fetchCourses() {
+            const status = document.getElementById("status");
+            const container = document.getElementById("courses");
+
+            container.innerHTML = "";
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/courses/");
+                const courses = await response.json();
+
+                if (!courses.length) {
+                    status.textContent = "No courses available right now.";
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            No courses are published yet.
+                        </div>
+                    `;
+                    return;
+                }
+
+                status.textContent = `${courses.length} course${courses.length === 1 ? "" : "s"} ready to buy`;
+
+                courses.forEach(course => {
+                    const div = document.createElement("div");
+                    div.className = "course-card";
+
+                    div.innerHTML = `
+                        <span class="course-badge">Popular pick</span>
+                        <h3 class="course-title">${course.title}</h3>
+                        <p class="course-price">₹ ${course.price}</p>
+                        <p class="course-meta">
+                            Learn the core skills for this topic with a focused lessons, practice, and guided checkout.
+                        </p>
+                        <button class="buy-btn" onclick="buyCourse(${course.id})">
+                            Buy Now
+                        </button>
+                    `;
+
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                status.textContent = "Could not load courses.";
+                container.innerHTML = `
+                    <div class="error-state">
+                        Could not load courses. Check the Django API, CORS, and browser console.
+                    </div>
+                `;
+                console.error(error);
+            }
+        }
+
+        async function buyCourse(courseId) {
+            const status = document.getElementById("status");
+            status.textContent = "Creating order...";
+
+            const response = await fetch(
+                "http://127.0.0.1:8000/api/orders/create/",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        course_id: courseId,
+                        user_email: "test@gmail.com"
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            const options = {
+                key: data.razorpay_key,
+                amount: Number(data.amount) * 100,
+                currency: data.currency,
+                order_id: data.razorpay_order_id,
+                name: "CoursePay",
+                description: "Course Purchase",
+                theme: {
+                    color: "#2563eb"
+                },
+                handler: async function (response) {
+                    status.textContent = "Verifying payment...";
+
+                    const verifyResponse = await fetch(
+                        "http://127.0.0.1:8000/api/payments/verify/",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        }
+                    );
+
+                    await verifyResponse.json();
+                    status.textContent = "Payment successful.";
+                    alert("Payment Success");
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        }
+
+        fetchCourses();
+    </script>
+</body>
+
+</html>
