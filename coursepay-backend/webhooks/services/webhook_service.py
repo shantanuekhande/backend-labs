@@ -64,16 +64,13 @@ class WebhookService:
         )
 
         if not created:
+            print(f"⚠️ Duplicate event {event_id} ignored.")
             return
 
         # handle payment captured
         if event_type == "payment.captured":
 
-            razorpay_order_id = payload[
-                "payload"
-            ]["payment"]["entity"][
-                "order_id"
-            ]
+            razorpay_order_id = payload["payload"]["payment"]["entity"]["order_id"]
 
             payment = (
                 Payment.objects
