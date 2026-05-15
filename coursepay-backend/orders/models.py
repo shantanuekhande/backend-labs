@@ -6,6 +6,7 @@ class OrderStatus(models.TextChoices):
     PAYMENT_PENDING = 'PAYMENT_PENDING' 
     COMPLETED = 'COMPLETED'
     FAILED = 'FAILED'
+    CANCELLED = 'CANCELLED'
 
 class Order(models.Model):
     user_email = models.EmailField()

@@ -16,12 +16,12 @@ from payments.services.razorpay_service import (
 )
 
 
-
 class ReconciliationService:
 
     @staticmethod
     def reconcile_pending_payments():
 
+        # find stale payments
         stale_time = (
             timezone.now()
             - timedelta(minutes=1)
@@ -44,6 +44,8 @@ class ReconciliationService:
 
             try:
 
+                # fetch latest order state
+                # from Razorpay
                 razorpay_order = (
                     client.order.fetch(
                         payment.razorpay_order_id
@@ -64,7 +66,10 @@ class ReconciliationService:
                     f" {order_status}"
                 )
 
-                # paid
+                # ---------------------------------
+                # CASE 1 -> PAYMENT SUCCESS
+                # ---------------------------------
+
                 if order_status == "paid":
 
                     with transaction.atomic():
@@ -75,11 +80,11 @@ class ReconciliationService:
                             .get(id=payment.id)
                         )
 
+                        # idempotency protection
                         if (
                             locked_payment.status
                             == PaymentStatus.SUCCESS
                         ):
-
                             continue
 
                         locked_payment.status = (
@@ -97,8 +102,58 @@ class ReconciliationService:
                         order.save()
 
                         print(
-                            "Payment reconciled"
+                            "Payment reconciled successfully"
                         )
+
+                # ---------------------------------
+                # CASE 2 -> PAYMENT ABANDONED
+                # ---------------------------------
+
+                elif order_status == "created":
+
+                    with transaction.atomic():
+
+                        locked_payment = (
+                            Payment.objects
+                            .select_for_update()
+                            .get(id=payment.id)
+                        )
+
+                        # already processed
+                        if (
+                            locked_payment.status
+                            != PaymentStatus.INITIATED
+                        ):
+                            continue
+
+                        locked_payment.status = (
+                            PaymentStatus.FAILED
+                        )
+
+                        locked_payment.save()
+
+                        order = locked_payment.order
+
+                        order.status = (
+                            OrderStatus.CANCELLED
+                        )
+
+                        order.save()
+
+                        print(
+                            "Expired stale payment"
+                        )
+
+                # ---------------------------------
+                # CASE 3 -> UNKNOWN STATE
+                # ---------------------------------
+
+                else:
+
+                    print(
+                        f"Unhandled gateway status:"
+                        f" {order_status}"
+                    )
 
             except Exception as e:
 
