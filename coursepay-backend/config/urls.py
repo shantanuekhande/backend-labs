@@ -16,11 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from .views import health_check
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/courses/', include('courses.api.urls')),
     path("api/orders/",include("orders.api.urls")),
+    path("api/health/", health_check, name="health_check"),
     path("api/payments/", include("payments.api.urls")),
     path("api/webhooks/",include("webhooks.api.urls")),
 ]
