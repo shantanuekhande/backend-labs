@@ -264,7 +264,7 @@
             container.innerHTML = "";
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/courses/");
+                const response = await fetch("/api/courses/");
                 const courses = await response.json();
 
                 if (!courses.length) {
@@ -313,7 +313,7 @@
             status.textContent = "Creating order...";
 
             const response = await fetch(
-                "http://127.0.0.1:8000/api/orders/create/",
+                "/api/orders/create/",
                 {
                     method: "POST",
                     headers: {
@@ -342,7 +342,7 @@
                     status.textContent = "Verifying payment...";
 
                     const verifyResponse = await fetch(
-                        "http://127.0.0.1:8000/api/payments/verify/",
+                        "/api/payments/verify/",
                         {
                             method: "POST",
                             headers: {
